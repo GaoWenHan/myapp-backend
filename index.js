@@ -22,12 +22,21 @@ app.get('/', (req, res) => {
 })
 
 app.get('/List', async (req, res) => {
- const data = await Data.find()
-  res.json({
-    code:200,
-    message:"success",
-    data
-  })
+  try {
+    const data = await Data.find().maxTimeMS(5000)
+    res.json({
+      code:200,
+      message:"success", 
+      data
+    })
+  } catch (err) {
+    console.error('Database error:', err)
+    res.status(500).json({
+      code: 500,
+      message: 'Database operation failed',
+      error: err.message
+    })
+  }
 })
 
 app.listen(port, () => {
