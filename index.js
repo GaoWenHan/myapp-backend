@@ -5,9 +5,16 @@ const app = express()
 const port = process.env.PORT || 3000
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 30000
+})
 .then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err))
+.catch(err => {
+  console.error('MongoDB connection error:', err)
+  console.log('Current MONGODB_URI:', process.env.MONGODB_URI ? 'exists' : 'missing')
+})
 
 const dataSchema = new mongoose.Schema({
   username: String,
@@ -18,12 +25,12 @@ const Data = mongoose.model('Data', dataSchema,'Data')
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('<h1>路同帅先生你好</h1>')
 })
 
 app.get('/List', async (req, res) => {
   try {
-    const data = await Data.find().maxTimeMS(5000)
+    const data = await Data.find().maxTimeMS(30000)
     res.json({
       code:200,
       message:"success", 
